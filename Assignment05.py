@@ -6,7 +6,8 @@
 #   Brin Masterson, 2023-11-07, Created Script
 #   Brin Masterson, 2023-11-11, Started switch to dictionaries
 #   Brin Masterson, 2023-11-12, Worked on changes for JSON
-#   Brin Masterson, 2023-11-13, Added Error handling change, connected to github
+#   Brin Masterson, 2023-11-13, Added Error handling change, connected to GitHub,
+#   Brin Masterson, 2023-11-13, (cont.) Comment cleanup and format tidying.
 #
 # -------------------------------------------------------------------------- #
 # Setup Code
@@ -32,18 +33,19 @@ course_name: str = ""  # Holds the course name (user input).
 json_data: str = ""  # Holds combined string data separated by a comma.
 file = None  # Holds a reference to an opened file.
 menu_choice: str = ""  # Holds the user menu selection value (user input).
-student_data: dict[str, str, str] = {}  # Holds student data as a dictionary (first,last,course names)
+student_data: dict[str, str, str] = {}  # Holds student data as a dictionary
 students: list[dict[str]] = []  # Table of student data.
 
 # -------------------------------------------------------------------------- #
 # Main Body
-# Get existing data from file, load into table
+# Get existing data from JSON file, load into table
+# Error handling when the file is read into the list of dictionary rows.
 try:
     file = open(FILE_NAME, "r")
     students = json.load(file)
 except FileNotFoundError as e:
     print(f"\nThe {FILE_NAME} file must exist before running this script.\n")
-    print("Built-In Python error info: ")
+    print(" -- Technical Error Message -- ")
     print(e, e.__doc__, type(e), sep='\n')
     print("\nThe program will now exit. \n")
     exit()
@@ -57,7 +59,6 @@ else:
     if not file.closed:
         file.close()
 
-
 # Present and Process the data
 while True:
     # Present the menu of choices
@@ -65,7 +66,7 @@ while True:
 
     # Input student data
     if menu_choice == "1":
-
+        # Error handling when the user enters a first and last names
         try:
             student_first_name = input("Enter the student's first name: ").strip()
             if not student_first_name.isalpha():
@@ -99,9 +100,9 @@ while True:
             students.append(student_data)
 
             # Confirm registration
-            print()
             print(
-                f"{student_first_name} {student_last_name} is registered for {course_name}."
+                f"\n{student_first_name} {student_last_name} "
+                f"is registered for {course_name}.\n"
             )
             print()
 
@@ -126,6 +127,7 @@ while True:
     elif menu_choice == "3":
         file = open(FILE_NAME, "w")
         # Open file and write data, close to save
+        # Error handling when the dictionary rows are written to the file
         try:
             file = open(FILE_NAME, "w")
             json.dump(students, file)

@@ -6,7 +6,7 @@
 #   Brin Masterson, 2023-11-07, Created Script
 #   Brin Masterson, 2023-11-11, Started switch to dictionaries
 #   Brin Masterson, 2023-11-12, Worked on changes for JSON
-#   Brin Masterson, 2023-11-13, Added Error handling change
+#   Brin Masterson, 2023-11-13, Added Error handling change, connected to github
 #
 # -------------------------------------------------------------------------- #
 # Setup Code
@@ -37,64 +37,73 @@ students: list[dict[str]] = []  # Table of student data.
 
 # -------------------------------------------------------------------------- #
 # Main Body
-
-# Open the JSON file for reading
+# Get existing data from file, load into table
 try:
-	f = open('SomeFile.txt', 'r')
     file = open(FILE_NAME, "r")
     students = json.load(file)
-    file.close()
-except ZeroDivisionError as e:
-	print("Please do not use Zero for the second number!\n")
-	print("Built-In Python error info: ")
-	print(e, e.__doc__, type(e), sep='\n')
 except FileNotFoundError as e:
-	print("Text file must exist before running this script!]\n")
-	print("Built-In Python error info: ")
-	print(e, e.__doc__, type(e), sep='\n')
+    print(f"\nThe {FILE_NAME} file must exist before running this script.\n")
+    print("Built-In Python error info: ")
+    print(e, e.__doc__, type(e), sep='\n')
+    print("\nThe program will now exit. \n")
+    exit()
 except Exception as e:
-	print("There was a non-specific error!\n")
-	print("Built-In Python error info: ")
-	print(e, e.__doc__, type(e), sep='\n')
+    print("\nThere was a non-specific error! \n")
+    print("-- Technical Error Message -- ")
+    print(e, e.__doc__, type(e), sep='\n')
+    print("\nThe program will now exit. \n")
+    exit()
+else:
+    if not file.closed:
+        file.close()
 
 
 # Present and Process the data
 while True:
-    print()  # blank row(s) for readability
     # Present the menu of choices
-    menu_choice = input(f"{MENU}\nWhat would you like to do? ").strip()
-    print()  # blank row(s) for readability
+    menu_choice = input(f"\n{MENU}\nWhat would you like to do? \n").strip()
 
     # Input student data
     if menu_choice == "1":
+
+        try:
+            student_first_name = input("Enter the student's first name: ").strip()
+            if not student_first_name.isalpha():
+                raise ValueError(f"\nThe first name should not contain numbers.\n\n")
+
+            student_last_name = input("Enter the student's last name: ").strip()
+            if not student_last_name.isalpha():
+                raise ValueError(f"\nThe last name should not contain numbers.\n\n")
+
+        except ValueError as e:
+            print(e)  # Prints the custom message
+            print(" -- Technical Error Message -- ")
+            print(e.__doc__)
+            print(e.__str__())
+
         except Exception as e:
-        print("Error! Please check you are not dividing by zero.\n")
-        print("-- Technical Error Message -- ")
-        print(e)  # Print the exception object (typically includes the error message)print(type(e))
-        # Print the type of the exception objectprint(e.__doc__)
-        # Print the documentation string of the exception typeprint(e.__str__())
-        # Print the string representation of the exception
+            print("\nThere was a non-specific error :(\n")
+            print(" -- Technical Error Message -- ")
+            print(e, e.__doc__, type(e), sep='\n')
+        else:
+            course_name = input("Enter the course name: ").strip().capitalize()
 
-        student_first_name = input("Enter the student's first name: ").strip()
-        student_last_name = input("Enter the student's last name: ").strip()
-        course_name = input("Enter the course name: ").strip().capitalize()
+            # Store student details in dictionary
+            student_data = {
+                "First Name": student_first_name,
+                "Last Name": student_last_name,
+                "Course Name": course_name
+            }
 
-        # Store student details in dictionary
-        student_data = {
-            "First Name": student_first_name,
-            "Last Name": student_last_name,
-            "Course Name": course_name
-        }
+            # Add student details dictionary to table
+            students.append(student_data)
 
-        # Add student details dictionary to table
-        students.append(student_data)
-
-        # Confirm registration
-        print()
-        print(
-            f"{student_first_name} {student_last_name} is registered for {course_name}."
-        )
-        print()
+            # Confirm registration
+            print()
+            print(
+                f"{student_first_name} {student_last_name} is registered for {course_name}."
+            )
+            print()
 
         continue
 
@@ -112,12 +121,27 @@ while True:
             )
         continue
 
+
     # Save data to a file
     elif menu_choice == "3":
-        # Save the data to the file
         file = open(FILE_NAME, "w")
-        json.dump(students, file)
-        file.close()
+        # Open file and write data, close to save
+        try:
+            file = open(FILE_NAME, "w")
+            json.dump(students, file)
+
+        except FileNotFoundError as e:
+            print(f"The {FILE_NAME} file must exist before running this script\n")
+            print(" -- Technical Error Message -- ")
+            print(e, e.__doc__, type(e), sep='\n')
+
+        except Exception as e:
+            print("There was a non-specific error!\n")
+            print(" -- Technical Error Message -- ")
+            print(e, e.__doc__, type(e), sep='\n')
+        finally:
+            if not file.closed:
+                file.close()
 
         # Display saved data
         print(f"{FILE_NAME} has been saved as:\n")

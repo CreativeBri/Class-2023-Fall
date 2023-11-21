@@ -9,7 +9,6 @@
 # -------------------------------------------------------------------------- #
 # Setup Code
 from json import JSONDecodeError
-from typing import TextIO
 import json
 
 # Constants
@@ -50,7 +49,7 @@ class FileProcessor:
         :param student_data: empty table of student details
         :return: student data to populate students table
         """
-        file: TextIO = None
+        file: json = None
         try:
             file = open(file_name, 'r')
             student_data = json.load(file)
